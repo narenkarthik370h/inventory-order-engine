@@ -30,7 +30,7 @@ public class Product {
     private String imagePath;
 
 
-    @Transient
+    @Transient //it means that the is in stock cannot be stored in the database
     public boolean isInStock() {
         return quantityAvailable != null && quantityAvailable > 0;
     }

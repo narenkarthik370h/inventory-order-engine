@@ -16,6 +16,7 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //referencing the product class key as foreign key here
     @ManyToOne
     private Product product;
 
@@ -23,6 +24,8 @@ public class OrderItem {
 
     private BigDecimal priceAtOrder;
 
+    //referencing the order class key as foreign key here
+    //automatically identify primary key from the parent class @id is the primary key
     @ManyToOne
     private Order order;
 }

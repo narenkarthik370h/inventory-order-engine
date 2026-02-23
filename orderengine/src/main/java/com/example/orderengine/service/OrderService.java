@@ -3,6 +3,7 @@ package com.example.orderengine.service;
 import com.example.orderengine.model.*;
 import com.example.orderengine.repo.OrderRepo;
 import com.example.orderengine.repo.ProductRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +15,12 @@ import java.util.List;
 @Service
 public class OrderService {
 
-    private final OrderRepo orderRepo;
-    private final ProductRepo productRepo;
+    @Autowired
+    private OrderRepo orderRepo;
 
-    public OrderService(OrderRepo orderRepo, ProductRepo productRepo) {
-        this.orderRepo = orderRepo;
-        this.productRepo = productRepo;
-    }
+    @Autowired
+    private ProductRepo productRepo;
+
 
     @Transactional
     public void createOrder(List<OrderItemRequest> requests) {

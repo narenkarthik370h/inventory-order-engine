@@ -1,7 +1,7 @@
+
 package com.example.orderengine.controller;
 
 import com.example.orderengine.model.Product;
-import com.example.orderengine.service.OrderService;
 import com.example.orderengine.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,74 +14,65 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/v1")
+
+//base path
+@RequestMapping("/api/v1/products")
 public class ProductController {
     @Autowired
     private ProductService service;
-;
-    @GetMapping("/")
-    public String greet() {
-        return "WELCOME TO ORDER ENGINE";
+
+    @GetMapping("/health")
+    public ResponseEntity<String> health() {
+        return ResponseEntity.ok("ORDER ENGINE RUNNING");
+    }
+    //absence of the path here means that it uses base path automatically
+    @PostMapping
+    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+        Product saved = service.addProduct(product);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    @PostMapping("/products")
-    public ResponseEntity<?> addProduct(@RequestBody Product product) {
-        try{
-            Product product1=service.addProduct(product);
-            return new ResponseEntity<>(product1,HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/products")
+    @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
-        return new ResponseEntity<>(service.getAllProducts(), HttpStatus.OK);
+        return ResponseEntity.ok(service.getAllProducts());
     }
 
-    @GetMapping("/products/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable Long id) {
-        try{
-            Product product2=service.getProductById(id);
-            return new ResponseEntity<>(product2,HttpStatus.OK);
-        }
-        catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        Product product = service.getProductById(id);
+        return ResponseEntity.ok(product);
     }
 
-    @PutMapping("/products/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable Long id,
-                                                @RequestBody Product product) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(
+            @PathVariable Long id,
+            @RequestBody Product product) {
 
-        service.updateProduct(id, product);
-        return new ResponseEntity<>("Updated", HttpStatus.OK);
-
+        Product updated = service.updateProduct(id, product);
+        return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/products/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
-        if(service.getProductById(id)!=null){
-            service.deleteProduct(id);
-        }
-        return new ResponseEntity<>("id not found",HttpStatus.BAD_REQUEST);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        service.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/products/{id}/image")
-    public ResponseEntity<String> addImageById(@PathVariable Long id,
-                                               @RequestPart MultipartFile imageFile) {
-        service.addImage(id,imageFile);
-        return new ResponseEntity<>("image added",HttpStatus.CREATED);
+    @PostMapping(value="/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> addImageById(
+            @PathVariable Long id,
+            @RequestPart MultipartFile imageFile) {
+
+        service.addImage(id, imageFile);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Image uploaded");
     }
 
-    @GetMapping("/products/{id}/image")
+    @GetMapping("/{id}/image")
     public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
         byte[] image = service.getImage(id);
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.IMAGE_JPEG) // or PNG dynamically later
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG) // later dynamic
                 .body(image);
     }
-
 }
-
