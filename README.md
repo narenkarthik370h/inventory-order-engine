@@ -19,3 +19,6 @@ Backend-first REST API built using Spring Boot and PostgreSQL.
 ## Run Locally
 - Configure PostgreSQL in application.properties
 - Run Spring Boot application
+
+## Containerised the project
+- docker-compose up --build 
